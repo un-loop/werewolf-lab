@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Button, TextField, Typography } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { useCallback } from 'react';
 import { useState } from 'react';
@@ -17,7 +17,14 @@ const getSendNumber = (client) => {
     return sendNumber;
 }
 
+const getHandleSend = (client) => (message) => {
+    if (client.readyState === client.OPEN) {
+        client.send(message);
+    }
+}
+
 export default () => {
+    const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
 
     const addMessage = useCallback(
@@ -41,26 +48,38 @@ export default () => {
         return newClient;
     }, []);
 
-    const sendNumber = useMemo(() => getSendNumber(client), [client]);
+    const sendMessage = useCallback(getHandleSend(client), [client]);
 
     useEffect(() => {
         client.onerror = () => addMessage('Connection error');
         client.onopen= () => {
                 addMessage('WebSocket client connected');
-                sendNumber();
         }
         client.onmessage = (e) => {
             if (typeof e.data === 'string') {
                 addMessage("Received: '" + e.data + "'");
             }
         }
-   }, [client, messages]);
+   }, [client, addMessage]);
 
     return (
         <React.Fragment>
             <Typography variant="h3">
                 Testing Web Socket messages
             </Typography>
+            <TextField
+                label="Enter Message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value) }
+            />
+            <Button
+                onClick={() => {
+                    sendMessage(message);
+                    setMessage('');
+                }}
+            variant="contained">
+                Send Message
+            </Button>
             <MessageList messages={messages} />
         </React.Fragment>
     )

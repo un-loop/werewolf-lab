@@ -9,7 +9,7 @@ const MessageList = ({messages}) => (
         </Typography>
         <List>
             {messages.length === 0 && "No Messages"}
-            {messages.length && messages.map(
+            {messages.length !== 0 && messages.map(
                 (message, index) => <Message message={message} key={index} />
             )}
         </List>
