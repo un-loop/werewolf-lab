@@ -80,6 +80,8 @@ export default () => {
             variant="contained">
                 Send Message
             </Button>
+
+
             <MessageList messages={messages} />
         </React.Fragment>
     )

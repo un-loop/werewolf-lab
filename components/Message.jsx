@@ -7,7 +7,7 @@ const Message = ({message}) => {
         <ListItem>
             <ListItemText primary={message.text} secondary={moment(message.date).format('LTS')} />
         </ListItem>
-    )
-}
+    );
+};
 
 export default Message;
