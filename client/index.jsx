@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import EchoTest from "../components/EchoTest";
+import App from "../components/App";
 
 ReactDOM.render(
-    <EchoTest />,
+    <App />,
     document.getElementById("example")
 );

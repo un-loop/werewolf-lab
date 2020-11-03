@@ -1,9 +1,10 @@
-import { Button, TextField, Typography } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { useCallback } from 'react';
 import { useState } from 'react';
 import {w3cwebsocket as WebSocket} from 'websocket';
 import MessageList from './MessageList';
+import NameEntry from './NameEntry';
 
 const getSendNumber = (client) => {
     const sendNumber = () => {
@@ -17,15 +18,17 @@ const getSendNumber = (client) => {
     return sendNumber;
 }
 
-const getHandleSend = (client) => (message) => {
+const getHandleSend = (client) => (nickname) => {
     if (client.readyState === client.OPEN) {
-        client.send(message);
+        client.send(nickname);
     }
 }
 
 export default () => {
-    const [message, setMessage] = useState('');
+    const [nickname, setNickname] = useState('');
+    const [nicknameChosen, setNicknameChosen] = useState(false);
     const [messages, setMessages] = useState([]);
+    const [nameError, setNameError] = useState('');
 
     const addMessage = useCallback(
         (messageText) => {
@@ -42,6 +45,19 @@ export default () => {
             setMessages(newMessages);
         }, [messages]
     );
+
+    const handleNameSelect = (e) => {
+        e.preventDefault();
+
+        if (nickname.length < 2) {
+            setNameError('Nickname must be at least 2 characters');
+            return;
+        }
+
+        setNameError(false);
+        setNicknameChosen(true);
+        sendMessage(nickname);
+    };
 
     const client = useMemo(() => {
         const newClient = new WebSocket('ws://localhost:3000/', 'echo-protocol');
@@ -65,19 +81,18 @@ export default () => {
     return (
         <React.Fragment>
             <Typography variant="h3">
-                Testing Web Socket messages
+                Play Werewolf
             </Typography>
-            <TextField
-                label="Enter Message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value) }
+            <NameEntry
+                nickname={nickname}
+                setNickname={setNickname}
+                nicknameChosen={nicknameChosen}
+                nameError={nameError}
             />
             <Button
-                onClick={() => {
-                    sendMessage(message);
-                    setMessage('');
-                }}
-            variant="contained">
+                onClick={handleNameSelect}
+                variant="contained"
+            >
                 Send Message
             </Button>
 
