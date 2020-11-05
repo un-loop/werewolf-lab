@@ -3,6 +3,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useCallback } from 'react';
 import { useState } from 'react';
 import {w3cwebsocket as WebSocket} from 'websocket';
+import { werewolfProtocol } from '../constants';
 import MessageList from './MessageList';
 import NameEntry from './NameEntry';
 
@@ -60,7 +61,7 @@ export default () => {
     };
 
     const client = useMemo(() => {
-        const newClient = new WebSocket('ws://localhost:3000/', 'echo-protocol');
+        const newClient = new WebSocket('ws://localhost:3000/', werewolfProtocol);
         return newClient;
     }, []);
 
@@ -89,12 +90,14 @@ export default () => {
                 nicknameChosen={nicknameChosen}
                 nameError={nameError}
             />
-            <Button
-                onClick={handleNameSelect}
-                variant="contained"
-            >
-                Send Message
-            </Button>
+            {!nicknameChosen &&
+                <Button
+                    onClick={handleNameSelect}
+                    variant="contained"
+                >
+                    Submit
+                </Button>
+            }
 
 
             <MessageList messages={messages} />

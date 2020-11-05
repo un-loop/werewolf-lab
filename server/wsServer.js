@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
-const allConnections = new Set();
+const { werewolfProtocol } = require('../constants');
+
+const game = { // TODO: make game immutable?
+    players: new Map() // map connections to player data
+};
 
 const WebSocketServer = require('websocket').server;
 
@@ -17,23 +21,20 @@ const handleConnection = (request) => {
       return;
     }
 
-    const connection = request.accept('echo-protocol', request.origin);
-    allConnections.add(connection);
+    const connection = request.accept(werewolfProtocol, request.origin);
 
     console.log((new Date()) + ' Connection accepted.');
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
-            console.log('Received Message: ' + message.utf8Data);
-
-            for(let c of allConnections.keys()) {
-                c.sendUTF(message.utf8Data);
-            }
+            console.log('registered player: ' + message.utf8Data);
+            game.players.set(connection, message.utf8Data);
+            console.table(game.players.values());
         }
-
     });
+
     connection.on('close', function(reasonCode, description) {
         console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
-        allConnections.delete(connection);
+        game.players.delete(connection);
     });
 }
 
