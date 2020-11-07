@@ -1,14 +1,10 @@
+const omitConnection = ({connection, ...rest}) => rest;
+
 module.exports.serialize = (game) => {
     const newGame = {
-        ...game, 
-        players: [...game.players.values()]
+        ...game,
+        players: game.players.map((player) => omitConnection(player))
     }
 
     return JSON.stringify(newGame);
-} 
-// name as key instead of connection as key for coding symetry 
-module.exports.deserialize = (str) => {
-    const obj = JSON.parse(str);
-   
-    return obj;
 }

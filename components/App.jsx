@@ -65,7 +65,7 @@ export default () => {
         client.onmessage = (e) => {
             if (typeof e.data === 'string') {
                 addMessage("Received: '" + e.data + "'");
-                setGame(deserialize(e.data));
+                setGame(JSON.parse(e.data));
             }
         }
    }, [client, addMessage]);

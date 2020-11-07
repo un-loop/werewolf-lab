@@ -3,8 +3,10 @@
 const { werewolfProtocol } = require('../constants');
 const { serialize } = require('../serialization/game');
 
+const allConnections = new Set();
+
 const game = { // TODO: make game immutable?
-    players: new Map() // map connections to player data
+    players: [],
 };
 
 const WebSocketServer = require('websocket').server;
@@ -14,9 +16,13 @@ function originIsAllowed(origin) {
     return true;
 };
 
-const sendUpdate = () => {
-    // send update to every player 
-    for (let connection of game.players.keys()) {
+const sendUpdate = (playersOnly = false) => {
+    const connections = playersOnly ?
+        game.players.map((player) => player.connection)
+        : allConnections.keys();
+
+    // send update to every player
+    for (let connection of connections) {
         connection.send(serialize(game));
     }
 };
@@ -35,18 +41,31 @@ const handleConnection = (request) => {
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
             console.log('registered player: ' + message.utf8Data);
-            game.players.set(connection, message.utf8Data);
-            console.table(game.players.values());
+
+            game.players.push({
+                name: message.utf8Data,
+                connection,
+            });
+
+            allConnections.add(connection);
+
             sendUpdate();
         }
     });
 
-
-
     connection.on('close', function(reasonCode, description) {
         console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
-        game.players.delete(connection);
+        const index = game.players.findIndex((player) => player.connection === connection);
+
+        if (index !== -1) {
+            game.players.splice(index, 1);
+        }
+
+        allConnections.delete(connection);
+        sendUpdate();
     });
+
+    connection.send(serialize(game));
 }
 
 module.exports = (httpServer) => {
