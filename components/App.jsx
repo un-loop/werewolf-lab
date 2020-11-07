@@ -4,20 +4,9 @@ import { useCallback } from 'react';
 import { useState } from 'react';
 import {w3cwebsocket as WebSocket} from 'websocket';
 import { werewolfProtocol } from '../constants';
+import { deserialize } from '../serialization/game';
 import MessageList from './MessageList';
 import NameEntry from './NameEntry';
-
-const getSendNumber = (client) => {
-    const sendNumber = () => {
-        if (client.readyState === client.OPEN) {
-            const number = Math.round(Math.random() * 0xFFFFFF);
-            client.send(number.toString());
-            setTimeout(sendNumber, 5000);
-        };
-    }
-
-    return sendNumber;
-}
 
 const getHandleSend = (client) => (nickname) => {
     if (client.readyState === client.OPEN) {
@@ -30,6 +19,7 @@ export default () => {
     const [nicknameChosen, setNicknameChosen] = useState(false);
     const [messages, setMessages] = useState([]);
     const [nameError, setNameError] = useState('');
+    const [game, setGame] = useState({});
 
     const addMessage = useCallback(
         (messageText) => {
@@ -75,6 +65,7 @@ export default () => {
         client.onmessage = (e) => {
             if (typeof e.data === 'string') {
                 addMessage("Received: '" + e.data + "'");
+                setGame(deserialize(e.data));
             }
         }
    }, [client, addMessage]);

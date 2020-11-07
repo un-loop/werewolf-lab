@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const { werewolfProtocol } = require('../constants');
+const { serialize } = require('../serialization/game');
 
 const game = { // TODO: make game immutable?
     players: new Map() // map connections to player data
@@ -11,7 +12,14 @@ const WebSocketServer = require('websocket').server;
 function originIsAllowed(origin) {
     // put logic here to detect whether the specified origin is allowed.
     return true;
-}
+};
+
+const sendUpdate = () => {
+    // send update to every player 
+    for (let connection of game.players.keys()) {
+        connection.send(serialize(game));
+    }
+};
 
 const handleConnection = (request) => {
     if (!originIsAllowed(request.origin)) {
@@ -29,8 +37,11 @@ const handleConnection = (request) => {
             console.log('registered player: ' + message.utf8Data);
             game.players.set(connection, message.utf8Data);
             console.table(game.players.values());
+            sendUpdate();
         }
     });
+
+
 
     connection.on('close', function(reasonCode, description) {
         console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
