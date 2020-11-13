@@ -1,3 +1,9 @@
-export const SIGNUP = 0;
-export const PLAYING = 1;
-export const COMPLETED = 2;
+const SIGNUP = 0;
+const PLAYING = 1;
+const COMPLETED = 2;
+
+module.exports = {
+    SIGNUP,
+    PLAYING,
+    COMPLETED
+};

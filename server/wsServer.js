@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
+const { createStore } = require('redux');
+
 const { werewolfProtocol } = require('../constants');
 const { serialize } = require('../serialization/game');
+const { gameReducer, getAddPlayerAction, getRemovePlayerAction } = require('./reducers/gameReducer');
 
 const allConnections = new Set();
 
-const game = { // TODO: make game immutable?
-    players: [],
-};
+const store = createStore(gameReducer);
 
 const WebSocketServer = require('websocket').server;
 
@@ -16,7 +17,9 @@ function originIsAllowed(origin) {
     return true;
 };
 
-const sendUpdate = (playersOnly = false) => {
+const sendUpdate = (playersOnly = false) => () => {
+    const game = store.getState();
+
     const connections = playersOnly ?
         game.players.map((player) => player.connection)
         : allConnections.keys();
@@ -26,6 +29,8 @@ const sendUpdate = (playersOnly = false) => {
         connection.send(serialize(game));
     }
 };
+
+store.subscribe(sendUpdate(false));
 
 const handleConnection = (request) => {
     if (!originIsAllowed(request.origin)) {
@@ -42,30 +47,20 @@ const handleConnection = (request) => {
         if (message.type === 'utf8') {
             console.log('registered player: ' + message.utf8Data);
 
-            game.players.push({
-                name: message.utf8Data,
-                connection,
-            });
-
             allConnections.add(connection);
+            store.dispatch(getAddPlayerAction(message.utf8Data, connection));
 
-            sendUpdate();
         }
     });
 
     connection.on('close', function(reasonCode, description) {
         console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
-        const index = game.players.findIndex((player) => player.connection === connection);
-
-        if (index !== -1) {
-            game.players.splice(index, 1);
-        }
 
         allConnections.delete(connection);
-        sendUpdate();
+        store.dispatch(getRemovePlayerAction(connection));
     });
 
-    connection.send(serialize(game));
+    connection.send(serialize(store.getState()));
 }
 
 module.exports = (httpServer) => {
