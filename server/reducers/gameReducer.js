@@ -28,6 +28,10 @@ const gameReducer = (state = initialState, action) => {
                 (player) => player.connection === action.payload.connection
             );
 
+            if (removeIndex === -1) {
+                return state;
+            }
+
             return {
                 ...state,
                 players: state.players.filter((player) => {
