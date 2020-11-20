@@ -16,7 +16,7 @@ const Game = ({children, game}) => {
                         <Box flexGrow={1}>
                             {children}
                         </Box>
-                        <GamePanel players={game.players} events={game.events} />
+                        <GamePanel players={game.players} events={game.eventLog} />
                     </React.Fragment>
                 :
                     <Typography variant="body1">

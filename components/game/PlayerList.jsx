@@ -1,6 +1,7 @@
 import React from "react";
 import { Typography, List, ListItemText, Box, ListItem } from "@material-ui/core";
 
+// scroll bar
 const PlayerList = ({players}) => {
 
     return (
