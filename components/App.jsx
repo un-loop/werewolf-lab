@@ -4,7 +4,8 @@ import { useCallback } from 'react';
 import { useState } from 'react';
 import {w3cwebsocket as WebSocket} from 'websocket';
 import { werewolfProtocol } from '../constants';
-import { deserialize } from '../serialization/game';
+import Game from './layout/Game';
+import Page from './layout/Page';
 import MessageList from './MessageList';
 import NameEntry from './NameEntry';
 
@@ -19,7 +20,7 @@ export default () => {
     const [nicknameChosen, setNicknameChosen] = useState(false);
     const [messages, setMessages] = useState([]);
     const [nameError, setNameError] = useState('');
-    const [game, setGame] = useState({});
+    const [game, setGame] = useState();
 
     const addMessage = useCallback(
         (messageText) => {
@@ -71,27 +72,28 @@ export default () => {
    }, [client, addMessage]);
 
     return (
-        <React.Fragment>
-            <Typography variant="h3">
-                Play Werewolf
-            </Typography>
-            <NameEntry
-                nickname={nickname}
-                setNickname={setNickname}
-                nicknameChosen={nicknameChosen}
-                nameError={nameError}
-            />
-            {!nicknameChosen &&
-                <Button
-                    onClick={handleNameSelect}
-                    variant="contained"
-                >
-                    Submit
-                </Button>
-            }
+        <Page>
+            <Game game={game}>
+                <Typography variant="h3">
+                    Play Werewolf
+                </Typography>
+                <NameEntry
+                    nickname={nickname}
+                    setNickname={setNickname}
+                    nicknameChosen={nicknameChosen}
+                    nameError={nameError}
+                />
+                {!nicknameChosen &&
+                    <Button
+                        onClick={handleNameSelect}
+                        variant="contained"
+                    >
+                        Submit
+                    </Button>
+                }
 
-
-            <MessageList messages={messages} />
-        </React.Fragment>
+                <MessageList messages={messages} />
+            </Game>
+        </Page>
     )
 }
