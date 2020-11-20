@@ -6,8 +6,9 @@ const Game = ({children, game}) => {
     return (
         <Box
             display="flex"
-            flexDirection="column"
+            flexDirection="row"
             alignItems="stretch"
+            width="100vw"
             height="100vh"
         >
             {

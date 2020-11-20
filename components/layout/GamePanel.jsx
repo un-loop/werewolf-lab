@@ -7,11 +7,15 @@ const useStyle = makeStyles((theme) => {
     return {
         root: {
             display: "flex",
-            flexDirection: "row",
+            flexDirection: "column",
             alignItems: "stretch",
-            height: 200,
+            width: 300,
             padding: theme.spacing(2),
-            borderTop: "0.4px #ccc",
+            borderLeft: "0.4px solid #ccc",
+            '& > * + *': {
+                borderTop: "0.4px solid #ccc",
+                paddingTop: theme.spacing(1),
+            }
         },
     };
 });
