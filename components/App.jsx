@@ -1,9 +1,10 @@
-import { Button, Typography } from '@material-ui/core';
+import { Button, ThemeProvider, Typography } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { useCallback } from 'react';
 import { useState } from 'react';
 import {w3cwebsocket as WebSocket} from 'websocket';
 import { werewolfProtocol } from '../constants';
+import werewolf from '../server/themes/werewolf';
 import Game from './layout/Game';
 import Page from './layout/Page';
 import MessageList from './MessageList';
@@ -66,34 +67,37 @@ export default () => {
         client.onmessage = (e) => {
             if (typeof e.data === 'string') {
                 addMessage("Received: '" + e.data + "'");
-                setGame(JSON.parse(e.data));
+                const gameState = JSON.parse(e.data);
+                setGame(gameState);
             }
         }
    }, [client, addMessage]);
 
     return (
-        <Page>
-            <Game game={game}>
-                <Typography variant="h3">
-                    Play Werewolf
-                </Typography>
-                <NameEntry
-                    nickname={nickname}
-                    setNickname={setNickname}
-                    nicknameChosen={nicknameChosen}
-                    nameError={nameError}
-                />
-                {!nicknameChosen &&
-                    <Button
-                        onClick={handleNameSelect}
-                        variant="contained"
-                    >
-                        Submit
-                    </Button>
-                }
+        <ThemeProvider theme={werewolf}>
+            <Page>
+                <Game game={game}>
+                    <Typography variant="h1">
+                        Play Werewolf
+                    </Typography>
+                    <NameEntry
+                        nickname={nickname}
+                        setNickname={setNickname}
+                        nicknameChosen={nicknameChosen}
+                        nameError={nameError}
+                    />
+                    {!nicknameChosen &&
+                        <Button
+                            onClick={handleNameSelect}
+                            variant="contained"
+                        >
+                            Submit
+                        </Button>
+                    }
 
-                <MessageList messages={messages} />
-            </Game>
-        </Page>
+                    <MessageList messages={messages} />
+                </Game>
+            </Page>
+        </ThemeProvider>
     )
 }

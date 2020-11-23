@@ -1,16 +1,33 @@
 import React from "react";
-import { Typography, List, ListItem, ListItemText, Box } from "@material-ui/core";
+import { Typography, List, ListItem, ListItemText, Box, makeStyles } from "@material-ui/core";
 
+const useStyles = makeStyles((theme) => ({
+        root: {
+        height: "50%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "stretch"
+    },
+    list: {
+        overflowY: "scroll",
+        overflowX: "hidden",
+        flexGrow: 1,
+    },
+    item: {
+        padding: 0,
+    }
+}));
 
 // scroll bar
 const EventList = ({events}) => {
+    const classes = useStyles();
 
     return (
-        <Box flexGrow={1}>
-            <Typography variant="h4">Events</Typography>
-            <List>
+        <Box className={classes.root} flexGrow={1}>
+            <Typography variant="h2">Events</Typography>
+            <List className={classes.list}>
                 {events.map((value, index) => (
-                    <ListItem key={index}>
+                    <ListItem key={index} className={classes.item}>
                         <ListItemText primary={value} />
                     </ListItem>
                 ))}
