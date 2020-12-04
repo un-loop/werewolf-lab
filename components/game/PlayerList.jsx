@@ -1,5 +1,6 @@
 import React from "react";
 import { Typography, List, ListItemText, Box, ListItem, makeStyles } from "@material-ui/core";
+import useGameContext from "../providers/gameProvider/useGameContext";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -18,8 +19,9 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const PlayerList = ({players}) => {
+const PlayerList = () => {
     const classes = useStyles();
+    const {players} = useGameContext();
 
     return (
         <Box className={classes.root} flexGrow={1}>
@@ -28,7 +30,7 @@ const PlayerList = ({players}) => {
             </Typography>
             <List className={classes.list}>
                 {
-                    players.map(
+                    players && players.map(
                         (player) => (
                             <ListItem key={player.name} className={classes.item}>
                                 <ListItemText primary={player.name} />

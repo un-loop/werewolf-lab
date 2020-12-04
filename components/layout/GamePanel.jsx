@@ -24,12 +24,12 @@ const useStyle = makeStyles((theme) => {
 // padding
 // background color
 
-const GamePanel = ({ players, events }) => {
+const GamePanel = () => {
     const classes = useStyle();
     return (
         <Box className={classes.root}>
-            <PlayerList players={players} />
-            <EventList events={events} />
+            <PlayerList />
+            <EventList />
         </Box>
     );
 };

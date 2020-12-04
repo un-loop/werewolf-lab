@@ -1,5 +1,6 @@
 import React from "react";
 import { Typography, List, ListItem, ListItemText, Box, makeStyles } from "@material-ui/core";
+import useGameContext from "../providers/gameProvider/useGameContext";
 
 const useStyles = makeStyles((theme) => ({
         root: {
@@ -19,14 +20,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // scroll bar
-const EventList = ({events}) => {
+const EventList = () => {
     const classes = useStyles();
+    const {eventLog} = useGameContext();
 
     return (
         <Box className={classes.root} flexGrow={1}>
             <Typography variant="h2">Events</Typography>
             <List className={classes.list}>
-                {events.map((value, index) => (
+                {eventLog && eventLog.map((value, index) => (
                     <ListItem key={index} className={classes.item}>
                         <ListItemText primary={value} />
                     </ListItem>

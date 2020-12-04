@@ -9,12 +9,7 @@ import Game from './layout/Game';
 import Page from './layout/Page';
 import MessageList from './MessageList';
 import NameEntry from './NameEntry';
-
-const getHandleSend = (client) => (nickname) => {
-    if (client.readyState === client.OPEN) {
-        client.send(nickname);
-    }
-}
+import useWebSocket from './providers/webSocketProvider/useWebSocket';
 
 export default () => {
     const [nickname, setNickname] = useState('');
@@ -23,21 +18,6 @@ export default () => {
     const [nameError, setNameError] = useState('');
     const [game, setGame] = useState();
 
-    const addMessage = useCallback(
-        (messageText) => {
-            const newMessage = {
-                text: messageText,
-                date: new Date()
-            }
-
-            const newMessages = [
-                ...messages.slice(-9),
-                newMessage
-            ];
-
-            setMessages(newMessages);
-        }, [messages]
-    );
 
     const handleNameSelect = (e) => {
         e.preventDefault();
@@ -52,33 +32,14 @@ export default () => {
         sendMessage(nickname);
     };
 
-    const client = useMemo(() => {
-        const newClient = new WebSocket('ws://localhost:3000/', werewolfProtocol);
-        return newClient;
-    }, []);
-
-    const sendMessage = useCallback(getHandleSend(client), [client]);
-
-    useEffect(() => {
-        client.onerror = () => addMessage('Connection error');
-        client.onopen= () => {
-                addMessage('WebSocket client connected');
-        }
-        client.onmessage = (e) => {
-            if (typeof e.data === 'string') {
-                addMessage("Received: '" + e.data + "'");
-                const gameState = JSON.parse(e.data);
-                setGame(gameState);
-            }
-        }
-   }, [client, addMessage]);
+    const sendMessage = useWebSocket('ws://localhost:3000/', werewolfProtocol, setGame);
 
     return (
         <ThemeProvider theme={werewolf}>
             <Page>
                 <Game game={game}>
                     <Typography variant="h1">
-                        Play Werewolf
+                        Werewolf
                     </Typography>
                     <NameEntry
                         nickname={nickname}
