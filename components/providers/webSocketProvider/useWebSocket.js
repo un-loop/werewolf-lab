@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useEffect } from 'react';
-import GameContext from './WebSocketContext';
 
 const getHandleSend = (client) => (nickname) => {
     if (client.readyState === client.OPEN) {
