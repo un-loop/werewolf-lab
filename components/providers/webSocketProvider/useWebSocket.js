@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useEffect } from 'react';
 
-const getHandleSend = (client) => (nickname) => {
+const getHandleSend = (client) => (action) => {
     if (client.readyState === client.OPEN) {
-        client.send(nickname);
+        client.send(JSON.stringify(action));
     }
 }
 

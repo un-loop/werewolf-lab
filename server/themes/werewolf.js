@@ -10,7 +10,7 @@ const werewolf = {
         body2: {
             fontSize: '1rem',
         }
-    }
+    },
 };
 
 export default createMuiTheme(werewolf);

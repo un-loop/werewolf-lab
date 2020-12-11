@@ -4,7 +4,7 @@ const { createStore } = require('redux');
 
 const { werewolfProtocol } = require('../constants');
 const { serialize } = require('../serialization/game');
-const { gameReducer, getAddPlayerAction, getRemovePlayerAction } = require('./reducers/gameReducer');
+const { gameReducer, getAddPlayerAction, getRemovePlayerAction, getStartAction } = require('./reducers/gameReducer');
 
 const allConnections = new Set();
 
@@ -45,11 +45,18 @@ const handleConnection = (request) => {
     console.log((new Date()) + ' Connection accepted.');
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
-            console.log('registered player: ' + message.utf8Data);
-
-            allConnections.add(connection);
-            store.dispatch(getAddPlayerAction(message.utf8Data, connection));
-
+            const data = JSON.parse(message.utf8Data);
+            switch(data.type) {
+                case "join": {
+                    allConnections.add(connection);
+                    store.dispatch(getAddPlayerAction(data.payload, connection));
+                    break;
+                }
+                case "start": {
+                    store.dispatch(getStartAction());
+                    break;
+                }
+            }
         }
     });
 

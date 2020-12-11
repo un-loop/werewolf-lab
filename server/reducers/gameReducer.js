@@ -1,8 +1,7 @@
-const { SIGNUP } = require("../../enums/gameStatus");
+const { SIGNUP, PLAYING } = require("../../enums/gameStatus");
 
-const minPlayers = 7;
-const maxPlayers = 50;
 const ADD_PLAYER = "game/addPlayer";
+const START_GAME = "game/startGame";
 const REMOVE_PLAYER = "game/removePlayer";
 
 const initialState = {
@@ -23,6 +22,18 @@ const gameReducer = (state = initialState, action) => {
                     `Player ${action.payload.name} joined`
                 ]
             };
+        case START_GAME:
+            console.log('starting game');
+            if (state.players.length < process.env.MIN_PLAYERS ||
+                state.players.length > process.env.MAX_PLAYERS) {
+                console.log('Cannot state, invalid number of players.');
+                return state;
+            }
+
+            return {
+                ...state,
+                gameStatus: PLAYING
+            }
         case REMOVE_PLAYER:
             const removeIndex = state.players.findIndex(
                 (player) => player.connection === action.payload.connection
@@ -58,6 +69,12 @@ const getAddPlayerAction = (name, connection) => {
     };
 };
 
+const getStartAction = () => {
+    return {
+        type: START_GAME
+    };
+}
+
 const getRemovePlayerAction = (connection) => {
     return {
         type: REMOVE_PLAYER,
@@ -70,5 +87,6 @@ const getRemovePlayerAction = (connection) => {
 module.exports = {
     gameReducer,
     getAddPlayerAction,
-    getRemovePlayerAction
+    getRemovePlayerAction,
+    getStartAction,
 };
